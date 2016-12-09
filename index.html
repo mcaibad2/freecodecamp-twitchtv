@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Freecodecamp Twitchtv</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            getStreamers();
+            $("#all").click(function(){
+                $(".online").show();
+                $(".offline").show();
+                $(".unavailable").show();
+
+                $("#all").addClass("active");
+                $("#online").removeClass("active");
+                $("#offline").removeClass("active");
+            });
+            $("#online").click(function(){
+                $(".online").show();
+                $(".offline").hide();
+                $(".unavailable").hide();
+
+                $("#all").removeClass("active");
+                $("#online").addClass("active");
+                $("#offline").removeClass("active");
+            });
+            $("#offline").click(function(){
+                $(".online").hide();
+                $(".offline").show();
+                $(".unavailable").hide();
+
+                $("#all").removeClass("active");
+                $("#online").removeClass("active");
+                $("#offline").addClass("active");
+            });
+        });
+        function getStreamers() {
+            ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas", "brunofin", "comster404", "MedryBW"].forEach(function (userName) {
+                $.getJSON("https://wind-bow.gomix.me/twitch-api/users/" + userName + "?callback=?", function (user) {
+                    if (user.error) {
+                        var result =
+                                '<div class="well well-sm unavailable">' +
+                                '<div class="row">' +
+                                '<div class="col-md-12">' +
+                                '<p>' + user.message + '</p>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>';
+                        $("#users").append(result);
+                    } else {
+                        $.getJSON("https://wind-bow.gomix.me/twitch-api/streams/" + userName + "?callback=?", function (stream) {
+                            var isStreaming = true;
+                            if (stream.stream === null) {
+                                isStreaming = false;
+                            }
+                            if (isStreaming) {
+                                var result =
+                                        '<div class="well well-sm online">' +
+                                        '<div class="row">' +
+                                        '<div class="col-md-1">' +
+                                        '<img src="' + user.logo + '" alt="" class="img-rounded" width="75"/>' +
+                                        '</div>' +
+                                        '<div class="col-md-10">' +
+                                        '<h4>' + '<a href="http://twitch.tv/' + user.display_name + '">' + user.display_name + '</a>' + '</h4>' +
+                                        '<p>' + stream.stream.channel.status + '</p>' +
+                                        '</div>' +
+                                        '<div class="col-md-1">' +
+                                        '<img src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/48/Status-user-online-icon.png" alt="" />' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '</div>';
+                                $("#users").append(result);
+                            } else {
+                                var result =
+                                        '<div class="well well-sm offline">' +
+                                        '<div class="row">' +
+                                        '<div class="col-md-1">' +
+                                        '<img src="' + user.logo + '" alt="" class="img-rounded" width="75"/>' +
+                                        '</div>' +
+                                        '<div class="col-md-10">' +
+                                        '<h4>' + '<a href="http://twitch.tv/' + user.display_name + '">' + user.display_name + '</a>' + '</h4>' +
+                                        '</div>' +
+                                        '<div class="col-md-1">' +
+                                        '<img src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/48/Status-user-busy-icon.png" alt="" />' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '</div>';
+                                $("#users").append(result);
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    </script>
+    <style>
+        .button-group {
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Twitch streamers</h1>
+    <div class="row button-group">
+        <div class="col-md-12">
+            <div class="btn-group btn-group-justified">
+                <a href="#" class="btn btn-primary active" id="all">All</a>
+                <a href="#" class="btn btn-primary" id="online">Online</a>
+                <a href="#" class="btn btn-primary" id="offline">Offline</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="users"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
